@@ -99,8 +99,23 @@ def train_and_log_models(models: dict, X_train, X_test, y_train, y_test,
             for metric_name, value in test_metrics.items():
                 mlflow.log_metric(f"test_{metric_name}", value)
 
-            # Log model artifact
-            mlflow.sklearn.log_model(model, artifact_path=name)
+            # Log model artifact (with skops trusted types for tree-based models)
+            trusted_types = [
+                'sklearn.tree._tree.Tree',
+                'sklearn.ensemble._forest.RandomForestClassifier',
+                'sklearn.ensemble._gb.GradientBoostingClassifier',
+                'numpy.float64', 'numpy.int64',
+            ]
+            try:
+                mlflow.sklearn.log_model(
+                    model, artifact_path=name,
+                    skops_trusted_types=trusted_types
+                )
+            except Exception:
+                mlflow.sklearn.log_model(
+                    model, artifact_path=name,
+                    serialization_format='pickle'
+                )
 
             # Save model locally
             model_path = os.path.join(model_save_dir, f"{name}.joblib")
