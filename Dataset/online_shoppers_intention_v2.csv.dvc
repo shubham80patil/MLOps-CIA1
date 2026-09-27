@@ -1,0 +1,5 @@
+outs:
+- md5: e38c94fd6408669a16f0c3e158c0c345
+  size: 1474899
+  hash: md5
+  path: online_shoppers_intention_v2.csv
